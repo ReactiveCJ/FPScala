@@ -55,6 +55,13 @@ trait Stream[+A] {
     }
   }
 
+  def scanRight[B](z: B)(f: (A, => B) => B): Stream[B] =
+    foldRight((z, Stream(z)))((a, p0) => {
+      lazy val p1 = p0
+      val b2 = f(a, p1._1)
+      (b2, cons(b2, p1._2))
+    })._2
+
   def exists(p: A => Boolean):Boolean = {
     foldRight(false)((a,b) => p(a) || b)
   }
@@ -97,36 +104,42 @@ trait Stream[+A] {
 
 
   def mapViaUnfold[B](f: A => B):Stream[B] = {
-    unfold(this)( {
-      case Cons(h,t) =>
+    unfold(this)(
+    a => a.uncons match {
+      case Some((h,t)) =>
         Some(f(h),t)
       case _ =>
-        println(123)
         None
     }
     )
   }
 
   def takeViaUnfold(n:Int):Stream[A] = {
-    unfold((this,n)) {
-      case (Cons(h,t),1) => Some(h,(empty,0))
-      case (Cons(h,t),m) => Some(h,(t,m-1))
-      case _ => None
-    }
+    unfold((this,n))(
+      a => (a._1.uncons,a._2) match {
+        case (Some((h,t)),1) => Some(h,(empty,0))
+        case (Some((h,t)),m) => Some(h,(t,m-1))
+        case _ => None
+      }
+    )
   }
 
   def takeWhileViaUnfold(p:A => Boolean):Stream[A] = {
-    unfold(this) {
-      case Cons(h,t) if p(h) => Some(h,t)
+    unfold(this) (
+    a => a.uncons match {
+      case Some((h,t)) if p(h) => Some(h,t)
       case _ => None
-    }
+      }
+    )
   }
 
   def zipWith[B,C](s2:Stream[B])(f:(A,B) => C):Stream[C] = {
-    unfold((this, s2)) {
-      case (Cons(h1, t1), Cons(h2, t2)) => Some(f(h1, h2), (t1, t2))
-      case _ => None
-    }
+    unfold((this, s2)) (
+      a => (a._1.uncons,a._2.uncons) match {
+        case (Some((h1, t1)), Some((h2, t2))) => Some(f(h1, h2), (t1, t2))
+        case _ => None
+      }
+    )
   }
 
   def zip[B](s2:Stream[B]):Stream[(A,B)] = {
@@ -138,23 +151,30 @@ trait Stream[+A] {
   }
 
   def zipWithAll[B,C](s2:Stream[B])(f:(Option[A],Option[B]) => C):Stream[C] = {
-    unfold(this,s2) {
-      case (Empty,Empty) => None
-      case (Cons(h,t),Empty) => Some(f(Some(h), Option.empty[B]),(t, empty[B]))
-      case (Empty,Cons(h,t)) => Some(f(Option.empty[A],Some(h)),(empty[A],t))
-      case (Cons(h1, t1), Cons(h2, t2)) => Some(f(Some(h1), Some(h2)), (t1,t2))
+    unfold(this,s2) (
+      a => (a._1.uncons,a._2.uncons) match {
+      case (None,None) => None
+      case (Some((h,t)),None) => Some(f(Some(h), Option.empty[B]),(t, empty[B]))
+      case (None,Some((h,t))) => Some(f(Option.empty[A],Some(h)),(empty[A],t))
+      case (Some((h1, t1)), Some((h2, t2))) => Some(f(Some(h1), Some(h2)), (t1,t2))
     }
+    )
   }
 
+  def tails: Stream[Stream[A]] = {
+    unfold(this)(
+    a => a.uncons match {
+      case Some((h,t)) => Some(a,t)
+      case _ => None
+    }
+    )
+  }
+
+
+
 }
 
-case class Cons[+A](h:A ,tl:Stream[A]) extends Stream[A] {
-  lazy val uncons = Some(h, tl)
-}
 
-case object Empty extends Stream[Nothing] {
-  def uncons = None
-}
 
 object Stream {
 
@@ -207,5 +227,8 @@ object Stream {
     s.zipAll(s2).takeWhile(_._2.isDefined).forAll{ case (a,b) => a == b}
   }
 
+
+  def hasSubsequence[A](s1: Stream[A], s2: Stream[A]): Boolean =
+    s1.tails exists (startsWith(_,s2))
 
 }

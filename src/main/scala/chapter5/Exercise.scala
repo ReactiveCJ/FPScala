@@ -5,6 +5,7 @@ import chapter5.Stream._
 object Exercise extends App{
 
   val s = Stream(1,2,3,4,5)
+  val p = Stream(6,7,8,9)
   println(s.toList)
   println(s.take(2).toList)
   println(s.takeWhile(_ % 2 == 0).toList)
@@ -22,4 +23,15 @@ object Exercise extends App{
 
   println(s.mapViaUnfold(_+2).toList)
 
+  println(s.takeViaUnfold(2).toList)
+
+  println(s.takeWhile(_ < 3).toList)
+
+  println(s.zip(p).take(4).toList)
+
+  println(s.zipAll(p).take(6).toList)
+
+  println(s.tails.take(5).map(_.toList).toList)
+
+  println(s.scanRight(0)(_+_).toList)
 }
