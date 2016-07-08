@@ -33,5 +33,5 @@ object Exercise extends App{
 
   println(s.tails.take(5).map(_.toList).toList)
 
-  println(s.scanRight(0)(_+_).toList)
+  println(Stream(1,2,3).scanRight(0)(_+_).toList)
 }

@@ -55,6 +55,7 @@ trait Stream[+A] {
     }
   }
 
+  //use foldRight from right to left
   def scanRight[B](z: B)(f: (A, => B) => B): Stream[B] =
     foldRight((z, Stream(z)))((a, p0) => {
       lazy val p1 = p0
