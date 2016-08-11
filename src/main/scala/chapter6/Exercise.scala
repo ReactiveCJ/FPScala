@@ -38,7 +38,7 @@ object Exercise extends App{
   }
 
 
-  val int: Rand[Int] = _.nextInt
+  val int: Rand[Int] = rng => rng.nextInt
 
   def ints(count: Int)(rng: RNG): (List[Int],RNG) = {
 
