@@ -83,11 +83,11 @@ object RNG {
 
 }
 import State._
-case class State[S,+A](run: S => (A,S)) {
+case class State[S,+A](action: S => (A,S)) {
 
   def map[B](f: A => B):State[S,B] = State(
     s => {
-      val (a, s1) = run(s)
+      val (a, s1) = action(s)
       (f(a),s1)
     }
   )
@@ -95,8 +95,8 @@ case class State[S,+A](run: S => (A,S)) {
   def flatMap[B](f:A => State[S,B]): State[S, B] = {
     State(
       s => {
-        val (a,s1) = run(s)
-        f(a).run(s1)
+        val (a,s1) = action(s)
+        f(a).action(s1)
       }
     )
   }

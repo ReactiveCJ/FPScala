@@ -70,8 +70,8 @@ object Exercise extends App{
   }
 
   val mac = Machine(true,10,10)
-  val x = Candy.simulateMachine(List(Coin,Coin,Turn)).run(mac)
-  val y = Candy._simulateMachine(List(Coin,Coin,Turn)).run(mac)
+  val x = Candy.simulateMachine(List(Coin,Coin,Turn)).action(mac)
+  val y = Candy._simulateMachine(List(Coin,Coin,Turn)).action(mac)
 
   println(x)
   println(y)
