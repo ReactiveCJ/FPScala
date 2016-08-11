@@ -161,7 +161,7 @@ object Candy {
   } yield (s.candies,s.coins)
 
   def _simulateMachine(inputs: List[Input]) = State.sequence(inputs map (_modify[Machine] _ compose update) ).flatMap{
-    x =>
+    _ =>
       get.map(
         s =>
           (s.candies,s.coins)
