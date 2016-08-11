@@ -69,6 +69,10 @@ object Exercise extends App{
     }
   }
 
-  println(nonNegativeLessThan(30)(rng))
+  val mac = Machine(true,10,10)
+  val x = Candy.simulateMachine(List(Coin,Coin,Turn)).run(mac)
+  val y = Candy._simulateMachine(List(Coin,Coin,Turn)).run(mac)
 
+  println(x)
+  println(y)
 }
