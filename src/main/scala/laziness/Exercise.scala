@@ -1,6 +1,6 @@
-package chapter5
+package laziness
 
-import chapter5.Stream._
+import laziness.Stream._
 
 object Exercise extends App{
 

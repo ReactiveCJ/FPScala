@@ -1,4 +1,4 @@
-package chapter3
+package datastructures
 
 sealed trait List[+A]
 

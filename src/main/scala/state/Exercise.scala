@@ -1,4 +1,4 @@
-package chapter6
+package state
 
 import RNG._
 

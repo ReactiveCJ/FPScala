@@ -1,7 +1,7 @@
-package chapter3
+package datastructures
 
-import chapter3.List._
-import chapter3.Tree._
+import datastructures.List._
+import datastructures.Tree._
 
 object Exercise {
 

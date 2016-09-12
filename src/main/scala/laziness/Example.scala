@@ -1,4 +1,4 @@
-package chapter5
+package laziness
 
 import Stream._
 

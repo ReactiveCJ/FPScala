@@ -1,4 +1,4 @@
-package chapter2
+package gettingstarted
 
 
 object Exercise extends App{
