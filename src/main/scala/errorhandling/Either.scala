@@ -1,4 +1,4 @@
-package chapter4
+package errorhandling
 
 
 trait Either[+E,+A] {

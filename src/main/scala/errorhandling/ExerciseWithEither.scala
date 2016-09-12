@@ -1,4 +1,4 @@
-package chapter4
+package errorhandling
 
 object ExerciseWithEither  extends App{
 
