@@ -107,7 +107,6 @@ object Par extends App{
       choices(k)(es)
   }
 
-
   def chooser[A,B](pa:Par[A])(choices:A => Par[B]):Par[B] = {
     es =>
       choices(run(es)(pa).get())(es)
