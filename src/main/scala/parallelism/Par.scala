@@ -126,9 +126,7 @@ object Par extends App{
 
   def flatMapViaJoin[A,B](a:Par[A])(f:A => Par[B]):Par[B] = join(map(a)(f))
 
-
   def _map2[A,B,C](a:Par[A],b:Par[B])(f:(A,B) => C):Par[C] = flatMap(a){ x => flatMap(b) { y => unit[C](f(x, y)) } }
-
 
 
 
