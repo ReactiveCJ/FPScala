@@ -36,10 +36,8 @@ trait Stream[+A] {
   def take(n:Int):Stream[A] = {
     this match {
       case Cons(h,t) if n >1 =>
-        println(12)
         cons(h(),t().take(n-1))
       case Cons(h, _) if n == 1 =>
-        println(32)
         cons(h(), empty)
       case _ => empty
     }

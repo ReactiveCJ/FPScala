@@ -2,19 +2,20 @@ package state
 
 import scala.annotation.tailrec
 
-
 trait RNG {
 
   def nextInt:(Int,RNG)
 
 }
 
+
 object RNG {
 
-  case class simpleRNG(seed:Long) extends RNG {
+
+  case class simple(seed:Long) extends RNG {
     def nextInt:(Int,RNG) = {
       val seed2 = (seed*0x5DEECE66DL + 0xBL) & ((1L << 48) - 1)
-      ((seed2 >>>16).asInstanceOf[Int],simpleRNG(seed2))
+      ((seed2 >>>16).asInstanceOf[Int],simple(seed2))
     }
   }
 
@@ -28,6 +29,9 @@ object RNG {
     val (i,r) = nonNegativeInt(rng)
     (i/(Double.MaxValue+1),r)
   }
+
+  def boolean(rng: RNG): (Boolean, RNG) =
+    rng.nextInt match { case (i,rng2) => (i%2==0,rng2) }
 
   def intDouble(rng:RNG):((Int,Double),RNG) = {
 
@@ -62,8 +66,6 @@ object RNG {
     }
   }
 
-
-
   def ints2(count:Int)(rng:RNG):(List[Int],RNG) = {
 
     @tailrec
@@ -77,9 +79,6 @@ object RNG {
     }
     go(count,rng,List())
   }
-
-
-
 
   type Rand[+A] = RNG => (A,RNG)
 
@@ -196,9 +195,7 @@ case class State[S,+A](run: S => (A,S)) {
 
 object State {
 
-  type Rand[A] = State[RNG, A]
-
-  def unit[S,A](a:A):State[S,A] = State( s => (a,s) )
+  def unit[S,A](a: => A):State[S,A] = State( s => (a,s) )
 
   def sequence[S,A](fs:List[State[S,A]]):State[S,List[A]] = {
 
@@ -231,7 +228,6 @@ object State {
   } yield ()
 
   def _modify[S](f: S => S):State[S,Unit] = get.flatMap{ s => set(f(s)) }
-
 
 }
 
@@ -275,17 +271,11 @@ object Candy extends App{
       )
   }
 
-
   val a = modify[Machine] _
-
 
   val b:(Machine => Machine) => State[Machine,Unit] = modify[Machine]
 
-
-
-
   val t = List(Coin,Turn,Turn,Coin)
-
 
   println(simulateMachine(t).run(Machine(true,10,10))._1)
 
